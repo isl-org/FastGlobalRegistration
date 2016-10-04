@@ -1,8 +1,36 @@
+// ----------------------------------------------------------------------------
+// -                       Fast Global Registration                           -
+// ----------------------------------------------------------------------------
+// The MIT License (MIT)
+//
+// Copyright (c) 2016
+// Qianyi Zhou <Qianyi.Zhou@gmail.com>
+// Jaesik Park <syncle@gmail.com>
+// Vladlen Koltun <vkoltun@gmail.com>
+// Intel Labs
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+// ----------------------------------------------------------------------------
 
 #include "app.h"
 
-
-void CApp::ReadFeature(char* filepath)
+void CApp::ReadFeature(const char* filepath)
 {
 	Points pts;
 	Feature feat;
@@ -11,37 +39,33 @@ void CApp::ReadFeature(char* filepath)
 	features_.push_back(feat);
 }
 
-void CApp::ReadFeature(char* filepath, Points& pts, Feature& feat)
+void CApp::ReadFeature(const char* filepath, Points& pts, Feature& feat)
 {
-	printf("ReadFeature...");
+	printf("ReadFeature ... ");
 
 	FILE* fid = fopen(filepath, "rb");
 	int nvertex;
 	fread(&nvertex, sizeof(int), 1, fid);
-	printf("%d vertices", nvertex);
-	
+
 	// read from feature file and fill out pts and feat
 	for (int v = 0; v < nvertex; v++)	{
-		
+
 		Vector3f pts_v;
 		fread(&pts_v(0), sizeof(float), 3, fid);
-		
+
 		VectorXf feat_v(DIM_FPFH);
 		fread(&feat_v(0), sizeof(float), DIM_FPFH, fid);
-		
+
 		pts.push_back(pts_v);
 		feat.push_back(feat_v);
 	}
-	
 	fclose(fid);
-
-	printf("done\n", nvertex);
+	printf("done.\n");
 }
 
-
-void CApp::SearchFLANNTree(flann::Index<flann::L2<float>>* index, 
-							VectorXf& input, 
-							std::vector<int>& indices, 
+void CApp::SearchFLANNTree(flann::Index<flann::L2<float>>* index,
+							VectorXf& input,
+							std::vector<int>& indices,
 							std::vector<float>& dists,
 							int nn)
 {
@@ -83,7 +107,7 @@ void CApp::AdvancedMatching()
 
 	///////////////////////////
 	/// BUILD FLANNTREE
-	///////////////////////////	
+	///////////////////////////
 
 	// build FLANNTree - fi
 	int rows, dim;
@@ -100,12 +124,10 @@ void CApp::AdvancedMatching()
 	flann::Index<flann::L2<float>> feature_tree_i(dataset_mat_fi, flann::KDTreeSingleIndexParams(15));
 	feature_tree_i.buildIndex();
 
-
-
 	// build FLANNTree - fj
 	rows = features_[fj].size();
 	dim = features_[fj][0].size();
-	
+
 	std::vector<float> dataset_fj(rows * dim);
 	flann::Matrix<float> dataset_mat_fj(&dataset_fj[0], rows, dim);
 
@@ -117,8 +139,6 @@ void CApp::AdvancedMatching()
 
 	flann::Index<flann::L2<float>> feature_tree_j(dataset_mat_fj, flann::KDTreeSingleIndexParams(15));
 	feature_tree_j.buildIndex();
-
-
 
 	bool crosscheck = true;
 	bool tuple = true;
@@ -134,8 +154,8 @@ void CApp::AdvancedMatching()
 
 	///////////////////////////
 	/// INITIAL MATCHING
-	///////////////////////////	
-	
+	///////////////////////////
+
 	std::vector<int> i_to_j(nPti, -1);
 	for (int j = 0; j < nPtj; j++)
 	{
@@ -164,9 +184,8 @@ void CApp::AdvancedMatching()
 		corres.push_back(std::pair<int, int>(corres_ij[i].first, corres_ij[i].second));
 	for (int j = 0; j < ncorres_ji; ++j)
 		corres.push_back(std::pair<int, int>(corres_ji[j].first, corres_ji[j].second));
-	
-	printf("points are remained : %d\n", corres.size());
 
+	printf("points are remained : %d\n", (int)corres.size());
 
 	///////////////////////////
 	/// CROSS CHECK
@@ -213,15 +232,14 @@ void CApp::AdvancedMatching()
 				}
 			}
 		}
-		printf("points are remained : %d\n", corres.size());
+		printf("points are remained : %d\n", (int)corres.size());
 	}
-
 
 	///////////////////////////
 	/// TUPLE CONSTRAINT
 	/// input : corres
 	/// output : corres
-	///////////////////////////	
+	///////////////////////////
 	if (tuple)
 	{
 		srand(time(NULL));
@@ -250,7 +268,7 @@ void CApp::AdvancedMatching()
 			idi2 = corres[rand2].first;
 			idj2 = corres[rand2].second;
 
-			// collect 3 points from i-th fragment 
+			// collect 3 points from i-th fragment
 			Eigen::Vector3f pti0 = pointcloud_[fi][idi0];
 			Eigen::Vector3f pti1 = pointcloud_[fi][idi1];
 			Eigen::Vector3f pti2 = pointcloud_[fi][idi2];
@@ -259,7 +277,7 @@ void CApp::AdvancedMatching()
 			float li1 = (pti1 - pti2).norm();
 			float li2 = (pti2 - pti0).norm();
 
-			// collect 3 points from j-th fragment 
+			// collect 3 points from j-th fragment
 			Eigen::Vector3f ptj0 = pointcloud_[fj][idj0];
 			Eigen::Vector3f ptj1 = pointcloud_[fj][idj1];
 			Eigen::Vector3f ptj2 = pointcloud_[fj][idj2];
@@ -276,7 +294,6 @@ void CApp::AdvancedMatching()
 				corres_tuple.push_back(std::pair<int, int>(idi1, idj1));
 				corres_tuple.push_back(std::pair<int, int>(idi2, idj2));
 				cnt++;
-
 			}
 
 			if (cnt >= TUPLE_MAX_CNT)
@@ -290,7 +307,6 @@ void CApp::AdvancedMatching()
 			corres.push_back(std::pair<int, int>(corres_tuple[i].first, corres_tuple[i].second));
 	}
 
-
 	if (swapped)
 	{
 		std::vector<std::pair<int, int>> temp;
@@ -300,11 +316,9 @@ void CApp::AdvancedMatching()
 		corres = temp;
 	}
 
-	printf("\t[final] matches %d.\n", corres.size());
-
+	printf("\t[final] matches %d.\n", (int)corres.size());
 	corres_ = corres;
 }
-
 
 // normalize points
 void CApp::NormalizePoints()
@@ -357,7 +371,6 @@ void CApp::NormalizePoints()
 	GlobalScale = scale; // second choice: we keep the maximum scale.
 	printf("normalize points :: global scale : %f\n", GlobalScale);
 
-
 	for (int i = 0; i < num; ++i)
 	{
 		int npti = pointcloud_[i].size();
@@ -369,7 +382,6 @@ void CApp::NormalizePoints()
 		}
 	}
 }
-
 
 double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 {
@@ -390,7 +402,6 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	for (int cnt = 0; cnt < npcj; cnt++)
 		pcj_copy[cnt] = pointcloud_[j][cnt];
 
-
 	if (corres_.size() < 10)
 		return -1;
 
@@ -400,14 +411,12 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	trans.setIdentity();
 
 	for (int itr = 0; itr < numIter; itr++) {
-
 		if (decrease_mu_)
 		{
 			if (itr % 4 == 0 && par > MAX_CORR_DIST) {
 				par /= DIV_FACTOR;
 			}
 		}
-
 
 		const int nvariable = 6;
 		Eigen::MatrixXd JTJ(nvariable, nvariable);
@@ -420,19 +429,18 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 		double r2 = 0.0;
 
 		for (int c = 0; c < corres_.size(); c++) {
-
 			int ii = corres_[c].first;
 			int jj = corres_[c].second;
 			Eigen::Vector3f p, q;
-			p = pointcloud_[i][ii]; 
-			q = pcj_copy[jj]; 
+			p = pointcloud_[i][ii];
+			q = pcj_copy[jj];
 			Eigen::Vector3f rpq = p - q;
 
 			int c2 = c;
 
 			float temp = par / (rpq.dot(rpq) + par);
 			s[c2] = temp * temp;
-				
+
 			J.setZero();
 			J(1) = -q(2);
 			J(2) = q(1);
@@ -486,19 +494,18 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 
 	TransOutput_ = trans * TransOutput_;
 	//cout << TransOutput_ << endl;
-
 	return par;
 }
 
 
-void CApp::WriteTrans(char* filepath)
+void CApp::WriteTrans(const char* filepath)
 {
 	FILE* fid = fopen(filepath, "w");
 
-	// this line indicates the transformation matrix aligns 
+	// this line indicates the transformation matrix aligns
 	// T * pointcloud_[1] and pointcloud_[0]
 	// 2 indicates there are two point cloud fragments.
-	fprintf(fid, "0 1 2");	
+	fprintf(fid, "0 1 2\nm");
 
 	Eigen::Matrix3f R;
 	Eigen::Vector3f t;
