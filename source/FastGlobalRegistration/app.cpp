@@ -230,7 +230,7 @@ void CApp::AdvancedMatching()
 		int rand0, rand1, rand2;
 		int idi0, idi1, idi2;
 		int idj0, idj1, idj2;
-		float scale = 0.90;
+		float scale = TUPLE_SCALE;
 		int ncorr = corres.size();
 		int number_of_trial = ncorr * 100;
 		std::vector<std::pair<int, int>> corres_tuple;
@@ -498,7 +498,7 @@ void CApp::WriteTrans(char* filepath)
 	// this line indicates the transformation matrix aligns 
 	// T * pointcloud_[1] and pointcloud_[0]
 	// 2 indicates there are two point cloud fragments.
-	fprintf(fid, "0 1 2");	
+	fprintf(fid, "0 1 2\n");	
 
 	Eigen::Matrix3f R;
 	Eigen::Vector3f t;

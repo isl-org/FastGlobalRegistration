@@ -10,8 +10,9 @@
 #define DIM_FPFH			33	// FPFH feature dimension
 #define DIV_FACTOR			1.4 // 2.0 originally
 #define MAX_CORR_DIST		0.025 // todo: should check
-#define TUPLE_SCALE			0.9
-#define TUPLE_MAX_CNT		100
+#define ITERATION_NUMBER	64
+#define TUPLE_SCALE			0.95
+#define TUPLE_MAX_CNT		300
 
 
 using namespace Eigen;
