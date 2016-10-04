@@ -505,7 +505,7 @@ void CApp::WriteTrans(const char* filepath)
 	// this line indicates the transformation matrix aligns
 	// T * pointcloud_[1] and pointcloud_[0]
 	// 2 indicates there are two point cloud fragments.
-	fprintf(fid, "0 1 2\nm");
+	fprintf(fid, "0 1 2\n");
 
 	Eigen::Matrix3f R;
 	Eigen::Vector3f t;
