@@ -248,7 +248,7 @@ void CApp::AdvancedMatching()
 		int rand0, rand1, rand2;
 		int idi0, idi1, idi2;
 		int idj0, idj1, idj2;
-		float scale = 0.90;
+		float scale = TUPLE_SCALE;
 		int ncorr = corres.size();
 		int number_of_trial = ncorr * 100;
 		std::vector<std::pair<int, int>> corres_tuple;
