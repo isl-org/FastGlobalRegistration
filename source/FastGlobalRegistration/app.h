@@ -33,9 +33,9 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#define DIM_FPFH			33	// FPFH feature dimension
-#define DIV_FACTOR			1.4 // 2.0 originally
-#define MAX_CORR_DIST		0.025 // todo: should check
+#define DIM_FPFH			33		// FPFH feature dimension
+#define DIV_FACTOR			1.4		// 2.0 originally
+#define MAX_CORR_DIST		0.025 
 #define ITERATION_NUMBER	64
 #define TUPLE_SCALE			0.95
 #define TUPLE_MAX_CNT		300
