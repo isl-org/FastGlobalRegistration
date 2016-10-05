@@ -131,8 +131,6 @@ void CApp::AdvancedMatching()
 	std::vector<float> dataset_fj(rows * dim);
 	flann::Matrix<float> dataset_mat_fj(&dataset_fj[0], rows, dim);
 
-	// do we really need to copy in this way? how about just making array?
-	// not priority
 	for (int i = 0; i < rows; i++)
 		for (int j = 0; j < dim; j++)
 			dataset_fj[i * dim + j] = features_[fj][i][j];
@@ -320,7 +318,8 @@ void CApp::AdvancedMatching()
 	corres_ = corres;
 }
 
-// normalize points
+// Normalize scale of points. 
+// X' = (X-\mu)/scale
 void CApp::NormalizePoints()
 {
 	int num = 2;
@@ -396,6 +395,7 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	int i = 0;
 	int j = 1;
 
+	// make another copy of pointcloud_[j].
 	Points pcj_copy;
 	int npcj = pointcloud_[j].size();
 	pcj_copy.resize(npcj);
@@ -411,6 +411,8 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	trans.setIdentity();
 
 	for (int itr = 0; itr < numIter; itr++) {
+		
+		// graduated non-convexity.
 		if (decrease_mu_)
 		{
 			if (itr % 4 == 0 && par > MAX_CORR_DIST) {
@@ -418,7 +420,7 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 			}
 		}
 
-		const int nvariable = 6;
+		const int nvariable = 6;	// 3 for rotation and 3 for translation
 		Eigen::MatrixXd JTJ(nvariable, nvariable);
 		Eigen::MatrixXd JTr(nvariable, 1);
 		Eigen::MatrixXd J(nvariable, 1);
@@ -493,7 +495,6 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	}
 
 	TransOutput_ = trans * TransOutput_;
-	//cout << TransOutput_ << endl;
 	return par;
 }
 
@@ -502,9 +503,9 @@ void CApp::WriteTrans(const char* filepath)
 {
 	FILE* fid = fopen(filepath, "w");
 
-	// this line indicates the transformation matrix aligns
-	// T * pointcloud_[1] and pointcloud_[0]
-	// 2 indicates there are two point cloud fragments.
+	// Below line indicates how the transformation matrix aligns two point clouds
+	// e.g. T * pointcloud_[1] is aligned with pointcloud_[0].
+	// '2' indicates that there are two point cloud fragments.
 	fprintf(fid, "0 1 2\n");
 
 	Eigen::Matrix3f R;

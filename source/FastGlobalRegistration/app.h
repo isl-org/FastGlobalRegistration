@@ -34,11 +34,11 @@
 #include <Eigen/Geometry>
 
 #define DIM_FPFH			33		// FPFH feature dimension
-#define DIV_FACTOR			1.4		// 2.0 originally
-#define MAX_CORR_DIST		0.025 
-#define ITERATION_NUMBER	64
-#define TUPLE_SCALE			0.95
-#define TUPLE_MAX_CNT		300
+#define DIV_FACTOR			1.4		// Division factor used for graduated non-convexity
+#define MAX_CORR_DIST		0.025	// Maximum correspondence distance.
+#define ITERATION_NUMBER	64		// Maximum number of iteration
+#define TUPLE_SCALE			0.95	// Similarity measure used for tuples of feature points.
+#define TUPLE_MAX_CNT		300		// Maximum tuple numbers.
 
 
 using namespace Eigen;
@@ -69,8 +69,6 @@ private:
 	// some internal functions
 	void ReadFeature(const char* filepath, Points& pts, Feature& feat);
 
-	//flann::Index<flann::L2<float>>* BuildFLANNTree(Feature& input);
-	//void GetFLANNMatrix(Feature);
 	void SearchFLANNTree(flann::Index<flann::L2<float>>* index,
 		VectorXf& input,
 		std::vector<int>& indices,
