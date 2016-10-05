@@ -30,6 +30,8 @@ if(WIN32)
 		message(STATUS "Compiling with MSVC")
 		add_definitions(-DNOMINMAX)
 		add_definitions(-D_USE_MATH_DEFINES)
+		add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)		# suppress C4996 warning
+		add_definitions(/wd4267 /wd4244 /wd4305)
 	endif(MSVC)
 elseif(CYGWIN)
 	message(STATUS "Compiling on Cygwin")
