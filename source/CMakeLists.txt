@@ -46,6 +46,8 @@ elseif(APPLE)
 	message(STATUS "Compiling on OSX")
 elseif(UNIX)
 	add_definitions(-DUNIX)
+	add_compile_options(-Wno-deprecated-declarations)
+	add_compile_options(-Wno-unused-result)
 	# enable c++11
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif(WIN32)
