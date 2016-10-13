@@ -46,7 +46,7 @@ The compilation has been tested with Windows 8 and 10, Visual Studio 2013 and 20
 
 ## Running FastGlobalRegistration
 
-The FastGlobalRegistration program takes three parameters: a file storing the features of the target point cloud, a file storing the features of the source point cloud, an output file that contains a transformation in [.log trajectory file format](http://redwood-data.org/indoor/fileformat.html).
+The FastGlobalRegistration program takes three parameters: a file storing the features of the target point cloud, a file storing the features of the source point cloud, and an output file that contains a transformation in [.log trajectory file format](http://redwood-data.org/indoor/fileformat.html).
 
 We have provided a synthetic dataset in the [dataset](dataset) folder. For example, you can run the program from console.
 ```
@@ -107,7 +107,7 @@ The relevant parameters are defined in [app.h](source/FastGlobalRegistration/app
 #define TUPLE_MAX_CNT		300		// Maximum tuple numbers.
 ```
 
-To use a different feature. Change **DIM_FPFH** to the dimension of the feature and write corresponding feature in the binary input file.
+To use a different feature. Change **DIM_FPFH** to the dimension of the feature and write corresponding feature in the binary input file. Re-compile the project and run it.
 
 **MAX_CORR_DIST** determines when the optimization will stop. In general, **MAX_CORR_DIST * diameter_of_model** should be set close to the threshold used to determine if a point pair is a match in global space. If you don't know how to set it, start with the default value **0.025**.
 
