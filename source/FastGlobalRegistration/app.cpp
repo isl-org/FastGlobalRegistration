@@ -3,11 +3,10 @@
 // ----------------------------------------------------------------------------
 // The MIT License (MIT)
 //
-// Copyright (c) 2016
+// Copyright (c) Intel Corporation 2016
 // Qianyi Zhou <Qianyi.Zhou@gmail.com>
 // Jaesik Park <syncle@gmail.com>
 // Vladlen Koltun <vkoltun@gmail.com>
-// Intel Labs
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -318,7 +317,7 @@ void CApp::AdvancedMatching()
 	corres_ = corres;
 }
 
-// Normalize scale of points. 
+// Normalize scale of points.
 // X' = (X-\mu)/scale
 void CApp::NormalizePoints()
 {
@@ -411,7 +410,7 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	trans.setIdentity();
 
 	for (int itr = 0; itr < numIter; itr++) {
-		
+
 		// graduated non-convexity.
 		if (decrease_mu_)
 		{

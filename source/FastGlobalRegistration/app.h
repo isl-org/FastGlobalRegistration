@@ -3,11 +3,10 @@
 // ----------------------------------------------------------------------------
 // The MIT License (MIT)
 //
-// Copyright (c) 2016
+// Copyright (c) Intel Corporation 2016
 // Qianyi Zhou <Qianyi.Zhou@gmail.com>
 // Jaesik Park <syncle@gmail.com>
 // Vladlen Koltun <vkoltun@gmail.com>
-// Intel Labs
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
