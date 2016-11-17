@@ -1,0 +1,7 @@
+Version 1.01 (11/16/2016)
+* Add dimensionality of feature vector to the input file. It is no longer a hard coded macro in the program. Changing feature type requires no re-compilation.
+* Add macro USE_ABSOLUTE_SCALE. See README.md for details.
+* Slightly tune parameters
+
+Version 1.0 (11/16/2016)
+* Publish on Github

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	app.ReadFeature(argv[2]);
 	app.NormalizePoints();
 	app.AdvancedMatching();
-	app.OptimizePairwise(1.0f, true, ITERATION_NUMBER);
+	app.OptimizePairwise(true, ITERATION_NUMBER);
 	app.WriteTrans(argv[3]);
 
 	return 0;

@@ -32,12 +32,12 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#define DIM_FPFH			33		// FPFH feature dimension
 #define DIV_FACTOR			1.4		// Division factor used for graduated non-convexity
-#define MAX_CORR_DIST		0.025	// Maximum correspondence distance.
+#define USE_ABSOLUTE_SCALE	0		// Measure distance in absolute scale (1) or in scale relative to the diameter of the model (0)
+#define MAX_CORR_DIST		0.025	// Maximum correspondence distance (also see comment of USE_ABSOLUTE_SCALE)
 #define ITERATION_NUMBER	64		// Maximum number of iteration
 #define TUPLE_SCALE			0.95	// Similarity measure used for tuples of feature points.
-#define TUPLE_MAX_CNT		300		// Maximum tuple numbers.
+#define TUPLE_MAX_CNT		1000	// Maximum tuple numbers.
 
 
 using namespace Eigen;
@@ -52,7 +52,7 @@ public:
 	void NormalizePoints();
 	void AdvancedMatching();
 	void WriteTrans(const char* filepath);
-	double OptimizePairwise(double mu_, bool decrease_mu_, int numIter_);
+	double OptimizePairwise(bool decrease_mu_, int numIter_);
 
 private:
 	// containers
@@ -64,6 +64,7 @@ private:
 	// for normalization
 	Points Means;
 	float GlobalScale;
+	float StartScale;
 
 	// some internal functions
 	void ReadFeature(const char* filepath, Points& pts, Feature& feat);

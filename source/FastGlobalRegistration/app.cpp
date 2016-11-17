@@ -41,10 +41,11 @@ void CApp::ReadFeature(const char* filepath)
 void CApp::ReadFeature(const char* filepath, Points& pts, Feature& feat)
 {
 	printf("ReadFeature ... ");
-
 	FILE* fid = fopen(filepath, "rb");
 	int nvertex;
 	fread(&nvertex, sizeof(int), 1, fid);
+	int ndim;
+	fread(&ndim, sizeof(int), 1, fid);
 
 	// read from feature file and fill out pts and feat
 	for (int v = 0; v < nvertex; v++)	{
@@ -52,8 +53,8 @@ void CApp::ReadFeature(const char* filepath, Points& pts, Feature& feat)
 		Vector3f pts_v;
 		fread(&pts_v(0), sizeof(float), 3, fid);
 
-		VectorXf feat_v(DIM_FPFH);
-		fread(&feat_v(0), sizeof(float), DIM_FPFH, fid);
+		VectorXf feat_v(ndim);
+		fread(&feat_v(0), sizeof(float), ndim, fid);
 
 		pts.push_back(pts_v);
 		feat.push_back(feat_v);
@@ -366,7 +367,13 @@ void CApp::NormalizePoints()
 	}
 
 	//// mean of the scale variation
-	GlobalScale = scale; // second choice: we keep the maximum scale.
+	if (USE_ABSOLUTE_SCALE) {
+		GlobalScale = 1.0f;
+		StartScale = scale;
+	} else {
+		GlobalScale = scale; // second choice: we keep the maximum scale.
+		StartScale = 1.0f;
+	}
 	printf("normalize points :: global scale : %f\n", GlobalScale);
 
 	for (int i = 0; i < num; ++i)
@@ -381,7 +388,7 @@ void CApp::NormalizePoints()
 	}
 }
 
-double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
+double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 {
 	printf("Pairwise rigid pose optimization\n");
 
@@ -389,7 +396,7 @@ double CApp::OptimizePairwise(double mu_, bool decrease_mu_, int numIter_)
 	int numIter = numIter_;
 	TransOutput_ = Eigen::Matrix4f::Identity();
 
-	par = mu_;
+	par = StartScale;
 
 	int i = 0;
 	int j = 1;

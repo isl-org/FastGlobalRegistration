@@ -13,6 +13,8 @@ The source code and dataset are published under the MIT license. See [LICENSE](L
 
 We include two external libraries ([Eigen](https://eigen.tuxfamily.org/) and [flann](http://www.cs.ubc.ca/research/flann/)) in the codebase for easy compilation. Both of them are under a BSD-style license. See [source/External/README.txt](source/External/README.txt) for details.
 
+Current version is 1.01 ([CHANGELOG](CHANGELOG)).
+
 ## Compilation
 
 FastGlobalRegistration is compiled using [CMake](https://cmake.org/). All dependencies are included in the codebase.
@@ -68,9 +70,9 @@ The evaluation method follows the protocol defined in [this page](http://redwood
 
 ### Creating input
 
-The input files are binary files storing the features of the point clouds. Each file starts with a 4-byte integer indicating the number of points, denoted as N. Then N points are stored sequentially with each point represented as (3+K) floats. The (3+K) floats are the x,y,z coordinates and a K-vector representing the feature vector associated with the point. K is the feature dimension. By default, we use FPFH feature. K = 33.
+The input files are binary files storing the features of the point clouds. Each file starts with a 4-byte integer indicating the number of points, denoted as N; followed by a 4-byte integer indicating the dimensionality of the feature vector, denoted as K. Then N points are stored sequentially with each point represented as (3+K) floats. The (3+K) floats are the x,y,z coordinates and a K-vector representing the feature vector associated with the point. In the data provided in the repository, we use FPFH feature with K=33.
 
-If you are familiar with [PCL](www.pointclouds.org), the following code creates such a binary feature file.
+If you are familiar with [PCL](www.pointclouds.org), the following code creates such a binary feature file of FPFH feature.
 ```cpp
 // Assume a point cloud with normal is given as
 // pcl::PointCloud<pcl::PointNormal>::Ptr object
@@ -83,8 +85,9 @@ fest.setInputNormals(object);
 fest.compute(*object_features);
 
 FILE* fid = fopen("features.bin", "wb");
-int nV = object->size();
+int nV = object->size(), nDim = 33;
 fwrite(&nV, sizeof(int), 1, fid);
+fwrite(&nDim, sizeof(int), 1, fid);
 for (int v = 0; v < nV; v++) {
     const pcl::PointNormal &pt = object->points[v];
     float xyz[3] = {pt.x, pt.y, pt.z};
@@ -99,16 +102,16 @@ fclose(fid);
 
 The relevant parameters are defined in [app.h](source/FastGlobalRegistration/app.h) as macros.
 ```cpp
-#define DIM_FPFH			33		// FPFH feature dimension
 #define DIV_FACTOR			1.4		// Division factor used for graduated non-convexity
-#define MAX_CORR_DIST		0.025	// Maximum correspondence distance.
+#define USE_ABSOLUTE_SCALE	0		// Measure distance in absolute scale (1) or in scale relative to the diameter of the model (0)
+#define MAX_CORR_DIST		0.025	// Maximum correspondence distance (also see comment of USE_ABSOLUTE_SCALE)
 #define ITERATION_NUMBER	64		// Maximum number of iteration
 #define TUPLE_SCALE			0.95	// Similarity measure used for tuples of feature points.
-#define TUPLE_MAX_CNT		300		// Maximum tuple numbers.
+#define TUPLE_MAX_CNT		1000	// Maximum tuple numbers.
 ```
 
-To use a different feature. Change **DIM_FPFH** to the dimension of the feature and write corresponding feature in the binary input file. Re-compile the project and run it.
+We measure distance relative to the diameter_of_model if **USE_ABSOLUTE_SCALE** is set to 0. It is our default setting for synthetic data. For real world data which you know the absolute scale, change **USE_ABSOLUTE_SCALE** to 1 and define **MAX_CORR_DIST** accordingly.
 
-**MAX_CORR_DIST** determines when the optimization will stop. In general, **MAX_CORR_DIST * diameter_of_model** should be set close to the threshold used to determine if a point pair is a match in global space. If you don't know how to set it, start with the default value **0.025**.
+**MAX_CORR_DIST** determines when the optimization will stop. In general, **MAX_CORR_DIST** (USE_ABSOLUTE_SCALE=1) or **MAX_CORR_DIST * diameter_of_model** (USE_ABSOLUTE_SCALE=0) should be set close to the threshold used to determine if a point pair is a match in global space. If you don't know how to set it, start with the default value **0.025**. Decreasing this parameter sometimes results in tighter alignment.
 
 **TUPLE_MAX_CNT** trades off between speed and accuracy. Increasing it will make the optimization slower but the result can be more accurate.
