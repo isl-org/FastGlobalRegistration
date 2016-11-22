@@ -34,8 +34,13 @@ void CApp::ReadFeature(const char* filepath)
 	Points pts;
 	Feature feat;
 	ReadFeature(filepath, pts, feat);
-	pointcloud_.push_back(pts);
-	features_.push_back(feat);
+	LoadFeature(pts,feat);
+}
+
+void CApp::LoadFeature(const Points& pts, const Feature& feat)
+{
+    pointcloud_.push_back(pts);
+    features_.push_back(feat);
 }
 
 void CApp::ReadFeature(const char* filepath, Points& pts, Feature& feat)
