@@ -509,17 +509,9 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 	return par;
 }
 
-
-void CApp::WriteTrans(const char* filepath)
+Eigen::Matrix4f CApp::GetTrans()
 {
-	FILE* fid = fopen(filepath, "w");
-
-	// Below line indicates how the transformation matrix aligns two point clouds
-	// e.g. T * pointcloud_[1] is aligned with pointcloud_[0].
-	// '2' indicates that there are two point cloud fragments.
-	fprintf(fid, "0 1 2\n");
-
-	Eigen::Matrix3f R;
+    Eigen::Matrix3f R;
 	Eigen::Vector3f t;
 	R = TransOutput_.block<3, 3>(0, 0);
 	t = TransOutput_.block<3, 1>(0, 3);
@@ -530,6 +522,20 @@ void CApp::WriteTrans(const char* filepath)
 	transtemp.block<3, 3>(0, 0) = R;
 	transtemp.block<3, 1>(0, 3) = -R*Means[1] + t*GlobalScale + Means[0];
 	transtemp(3, 3) = 1;
+    
+    return transtemp;
+}
+    
+void CApp::WriteTrans(const char* filepath)
+{
+	FILE* fid = fopen(filepath, "w");
+
+	// Below line indicates how the transformation matrix aligns two point clouds
+	// e.g. T * pointcloud_[1] is aligned with pointcloud_[0].
+	// '2' indicates that there are two point cloud fragments.
+	fprintf(fid, "0 1 2\n");
+
+    Eigen::Matrix4f transtemp = GetTrans();
 
 	fprintf(fid, "%.10f %.10f %.10f %.10f\n", transtemp(0, 0), transtemp(0, 1), transtemp(0, 2), transtemp(0, 3));
 	fprintf(fid, "%.10f %.10f %.10f %.10f\n", transtemp(1, 0), transtemp(1, 1), transtemp(1, 2), transtemp(1, 3));

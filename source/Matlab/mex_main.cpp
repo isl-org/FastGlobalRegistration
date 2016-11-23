@@ -72,14 +72,20 @@ void mexFunction( int nlhs, mxArray *plhs[],
         pts2[ii] = points_02.row(ii).cast<float>();
         feat2[ii] = features_02.row(ii).cast<float>();
     }    
-        
-//     mexPrintf("%f, %f\n",pts2[points_02.rows()-1](0),pts2[points_02.rows()-1](2));
-//     mexPrintf("%f, %f\n",feat2[points_02.rows()-1](0),feat2[points_02.rows()-1](features_02.cols()-1));
+
+    /* Call the actual code */
 	CApp app;
     app.LoadFeature(pts1,feat1);
     app.LoadFeature(pts2,feat2);
 	app.NormalizePoints();
 	app.AdvancedMatching();
 	app.OptimizePairwise(true, ITERATION_NUMBER);
-	app.WriteTrans("output.txt");
+	Eigen::Matrix4f transf = app.GetTrans();
+    
+    /* Return the transformation */
+    plhs[0] = mxCreateDoubleMatrix(4,4, mxREAL);
+    double * pt = mxGetPr(plhs[0]);
+    for(std::size_t ii=0; ii<4; ++ii)
+        for(std::size_t jj=0; jj<4; ++jj)
+            *(pt++) = (double)transf(jj,ii);
 }

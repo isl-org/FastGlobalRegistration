@@ -53,6 +53,7 @@ public:
 	void NormalizePoints();
 	void AdvancedMatching();
 	void WriteTrans(const char* filepath);
+    Matrix4f GetTrans();
 	double OptimizePairwise(bool decrease_mu_, int numIter_);
 
 private:
