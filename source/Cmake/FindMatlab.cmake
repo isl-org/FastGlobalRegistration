@@ -7,11 +7,11 @@
 
 SET(MATLAB_FOUND 0)
 IF( "$ENV{MATLAB_ROOT}" STREQUAL "" )
-    MESSAGE(STATUS "MATLAB_ROOT environment variable not set." )
-    MESSAGE(STATUS "In Linux this can be done in your user .bashrc file by appending the corresponding line, e.g:" )
-    MESSAGE(STATUS "export MATLAB_ROOT=/usr/local/MATLAB/R2012b" )
-    MESSAGE(STATUS "In Windows this can be done by adding system variable, e.g:" )
-    MESSAGE(STATUS "MATLAB_ROOT=D:\\Program Files\\MATLAB\\R2011a" )
+    MESSAGE(STATUS " * MATLAB_ROOT environment variable not set." )
+    MESSAGE(STATUS " * In Linux this can be done in your user .bashrc file by appending the corresponding line, e.g:" )
+    MESSAGE(STATUS " *  export MATLAB_ROOT=/usr/local/MATLAB/R2012b" )
+    MESSAGE(STATUS " * In Windows this can be done by adding system variable, e.g:" )
+    MESSAGE(STATUS " *  MATLAB_ROOT=D:\\Program Files\\MATLAB\\R2011a" )
 ELSE("$ENV{MATLAB_ROOT}" STREQUAL "" )
 
         FIND_PATH(MATLAB_INCLUDE_DIR mex.h

@@ -1,6 +1,4 @@
 # compile mex
-
-message(${FastGlobalRegistration_SOURCE_DIR}/Matlab/*.cpp)
 file(GLOB files ${FastGlobalRegistration_SOURCE_DIR}/Matlab/*.cpp)
 foreach(CPP_FULL_PATH ${files})
   get_filename_component(CPP_FILE ${CPP_FULL_PATH} NAME_WE)
