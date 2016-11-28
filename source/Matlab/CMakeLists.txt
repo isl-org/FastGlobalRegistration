@@ -31,6 +31,17 @@ foreach(CPP_FULL_PATH ${files})
 
   # Install it directly to the Matlab folder
   set_target_properties(${CPP_FILE} PROPERTIES
-           LIBRARY_OUTPUT_DIRECTORY ${FastGlobalRegistration_SOURCE_DIR}/Matlab)
+           FOLDER "Matlab_binding"
+           LIBRARY_OUTPUT_DIRECTORY ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+           LIBRARY_OUTPUT_DIRECTORY_RELEASE
+           ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+           LIBRARY_OUTPUT_DIRECTORY_DEBUG
+           ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+           RUNTIME_OUTPUT_DIRECTORY ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+           RUNTIME_OUTPUT_DIRECTORY_RELEASE
+           ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+           RUNTIME_OUTPUT_DIRECTORY_DEBUG
+           ${FastGlobalRegistration_SOURCE_DIR}/Matlab
+       )
 
 endforeach()

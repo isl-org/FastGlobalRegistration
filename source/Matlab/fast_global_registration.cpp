@@ -59,14 +59,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
     /* Copy to the expected container (vector of Eigen vectors instead of full Eigen matrix) */
     Points pts1(points_01.rows());
     Feature feat1(features_01.rows());
-    for (std::size_t ii=0; ii<points_01.rows(); ++ii)
+    for (std::size_t ii=0; ii<(std::size_t)points_01.rows(); ++ii)
     {
         pts1[ii] = points_01.row(ii).cast<float>();
         feat1[ii] = features_01.row(ii).cast<float>();
     }
     Points pts2(points_02.rows());
     Feature feat2(features_02.rows());
-    for (std::size_t ii=0; ii<points_02.rows(); ++ii)
+    for (std::size_t ii=0; ii<(std::size_t)points_02.rows(); ++ii)
     {
         pts2[ii] = points_02.row(ii).cast<float>();
         feat2[ii] = features_02.row(ii).cast<float>();
