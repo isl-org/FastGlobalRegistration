@@ -13,7 +13,7 @@ The source code and dataset are published under the MIT license. See [LICENSE](L
 
 We include two external libraries ([Eigen](https://eigen.tuxfamily.org/) and [flann](http://www.cs.ubc.ca/research/flann/)) in the codebase for easy compilation. Both of them are under a BSD-style license. See [source/External/README.txt](source/External/README.txt) for details.
 
-Current version is 1.01 ([CHANGELOG](CHANGELOG)).
+Current version is 1.02 ([CHANGELOG](CHANGELOG)).
 
 ## Compilation
 
@@ -115,3 +115,7 @@ We measure distance relative to the diameter_of_model if **USE_ABSOLUTE_SCALE** 
 **MAX_CORR_DIST** determines when the optimization will stop. In general, **MAX_CORR_DIST** (USE_ABSOLUTE_SCALE=1) or **MAX_CORR_DIST * diameter_of_model** (USE_ABSOLUTE_SCALE=0) should be set close to the threshold used to determine if a point pair is a match in global space. If you don't know how to set it, start with the default value **0.025**. Decreasing this parameter sometimes results in tighter alignment.
 
 **TUPLE_MAX_CNT** trades off between speed and accuracy. Increasing it will make the optimization slower but the result can be more accurate.
+
+### Matlab binding
+
+FastGlobalRegistration has a Matlab binding courtesy of Jordi Pont-Tuset. It can be used seamlessly with the compilation tool chains mentioned above. Follow instructions provided by CMake if you need to make additional configuration for MATLAB_ROOT environment variable. To use the Matlab binding, execute [fgr_demo.h](source/Matlab/fgr_demo.h) from source/Matlab.

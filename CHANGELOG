@@ -1,3 +1,6 @@
+Version 1.02 (11/27/2016)
+* Add Matlab binding by courtesy of Jordi Pont-Tuset.
+
 Version 1.01 (11/16/2016)
 * Add dimensionality of feature vector to the input file. It is no longer a hard coded macro in the program. Changing feature type requires no re-compilation.
 * Add macro USE_ABSOLUTE_SCALE. See README.md for details.

@@ -13,7 +13,7 @@ include_directories(
 	${FastGlobalRegistration_SOURCE_DIR}/External
 	${FastGlobalRegistration_SOURCE_DIR}/External/Eigen
 	${FastGlobalRegistration_SOURCE_DIR}/External/flann
-    ${FastGlobalRegistration_SOURCE_DIR}/FastGlobalRegistration
+	${FastGlobalRegistration_SOURCE_DIR}/FastGlobalRegistration
 	)
 
 # default built type

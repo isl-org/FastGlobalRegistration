@@ -8,9 +8,12 @@
 SET(MATLAB_FOUND 0)
 IF( "$ENV{MATLAB_ROOT}" STREQUAL "" )
     MESSAGE(STATUS " * MATLAB_ROOT environment variable not set." )
-    MESSAGE(STATUS " * In Linux this can be done in your user .bashrc file by appending the corresponding line, e.g:" )
+    MESSAGE(STATUS " * It should be set to your MATLAB root folder. You can execute 'matlabroot' from MATLAB console to get it.")
+    MESSAGE(STATUS " * In Linux this can be done by executing the following command line or adding it to .bashrc file, e.g.," )
     MESSAGE(STATUS " *  export MATLAB_ROOT=/usr/local/MATLAB/R2012b" )
-    MESSAGE(STATUS " * In Windows this can be done by adding system variable, e.g:" )
+    MESSAGE(STATUS " * In OSX this can be done by executing the following command line or adding it to .bashrc file, e.g.," )
+    MESSAGE(STATUS " *  export MATLAB_ROOT=/Applications/MATLAB_R2014a.app" )
+    MESSAGE(STATUS " * In Windows this can be done by adding system variable, e.g.," )
     MESSAGE(STATUS " *  MATLAB_ROOT=D:\\Program Files\\MATLAB\\R2011a" )
 ELSE("$ENV{MATLAB_ROOT}" STREQUAL "" )
 
@@ -21,13 +24,13 @@ ELSE("$ENV{MATLAB_ROOT}" STREQUAL "" )
 
         FIND_LIBRARY( MATLAB_MEX_LIBRARY
                       NAMES libmex mex
-                      PATHS $ENV{MATLAB_ROOT}/bin $ENV{MATLAB_ROOT}/extern/lib 
+                      PATHS $ENV{MATLAB_ROOT}/bin $ENV{MATLAB_ROOT}/extern/lib
                       PATH_SUFFIXES maci64 glnxa64 glnx86 win64/microsoft win32/microsoft
                       NO_DEFAULT_PATH)
 
         FIND_LIBRARY( MATLAB_MX_LIBRARY
                       NAMES libmx mx
-                      PATHS $ENV{MATLAB_ROOT}/bin $ENV{MATLAB_ROOT}/extern/lib 
+                      PATHS $ENV{MATLAB_ROOT}/bin $ENV{MATLAB_ROOT}/extern/lib
                       PATH_SUFFIXES maci64 glnxa64 glnx86 win64/microsoft win32/microsoft
                       NO_DEFAULT_PATH)
 
