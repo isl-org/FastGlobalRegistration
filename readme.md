@@ -119,3 +119,6 @@ We measure distance relative to the diameter_of_model if **USE_ABSOLUTE_SCALE** 
 ### Matlab binding
 
 FastGlobalRegistration has a Matlab binding courtesy of Jordi Pont-Tuset. It can be used seamlessly with the compilation tool chains mentioned above. Follow instructions provided by CMake if you need to make additional configuration for MATLAB_ROOT environment variable. To use the Matlab binding, execute [fgr_demo.m](source/Matlab/fgr_demo.m) from source/Matlab.
+
+### Troubleshooting
+If you encounter issues with FGR, please check [troubleshooting.md](troubleshooting.md)
