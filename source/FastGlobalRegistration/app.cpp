@@ -488,12 +488,6 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 		Eigen::Matrix4f delta = aff_mat.matrix().cast<float>();
 
 		trans = delta * trans;
-
-		//// transform point clouds
-		//Matrix3f R = delta.block<3, 3>(0, 0);
-		//Vector3f t = delta.block<3, 1>(0, 3);
-		//for (int cnt = 0; cnt < npcj; cnt++)
-		//	pcj_copy[cnt] = R * pcj_copy[cnt] + t;
 		TransformPoints(pcj_copy, delta);
 
 	}
@@ -571,7 +565,6 @@ Eigen::Matrix4f CApp::ReadTrans(const char* filename)
 	return temp;
 }
 
-
 void CApp::BuildDenseCorrespondence(const Eigen::Matrix4f& trans, 
 		Correspondences& corres)
 {   
@@ -606,7 +599,6 @@ void CApp::Evaluation(const char* gth, const char* estimation, const char *outpu
 	std::vector<std::pair<int, int>> corres;
 	Eigen::Matrix4f gth_trans = ReadTrans(gth);
 	BuildDenseCorrespondence(gth_trans, corres);
-	//visualize_matching(corres, m, nFrames);
 	printf("Groundtruth correspondences [%d-%d] : %d\n", fi, fj, 
 			(int)corres.size());
 
