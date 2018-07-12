@@ -50,15 +50,15 @@ typedef std::vector<std::pair<int, int>> Correspondences;
 
 class CApp{
 public:
-    void LoadFeature(const Points& pts, const Feature& feat);
+	void LoadFeature(const Points& pts, const Feature& feat);
 	void ReadFeature(const char* filepath);
 	void NormalizePoints();
 	void AdvancedMatching();
-    Eigen::Matrix4f ReadTrans(const char* filepath);
+	Eigen::Matrix4f ReadTrans(const char* filepath);
 	void WriteTrans(const char* filepath);
-    Matrix4f GetOutputTrans();
+	Matrix4f GetOutputTrans();
 	double OptimizePairwise(bool decrease_mu_, int numIter_);
-    void Evaluation(const char* gth, const char* estimation, const char *output);
+	void Evaluation(const char* gth, const char* estimation, const char *output);
 
 private:
 	// containers
@@ -74,15 +74,15 @@ private:
 
 	// some internal functions
 	void ReadFeature(const char* filepath, Points& pts, Feature& feat);
-    void TransformPoints(Points& points, const Eigen::Matrix4f& Trans);
-    void BuildDenseCorrespondence(const Eigen::Matrix4f& gth, 
-            Correspondences& corres);
-    
-    template <typename T>
-    void BuildKDTree(const vector<T>& data, KDTree* tree);
-    template <typename T>
+	void TransformPoints(Points& points, const Eigen::Matrix4f& Trans);
+	void BuildDenseCorrespondence(const Eigen::Matrix4f& gth, 
+			Correspondences& corres);
+	
+	template <typename T>
+	void BuildKDTree(const vector<T>& data, KDTree* tree);
+	template <typename T>
 	void SearchKDTree(KDTree* tree,
-        const T& input,
+		const T& input,
 		std::vector<int>& indices,
 		std::vector<float>& dists,
 		int nn);

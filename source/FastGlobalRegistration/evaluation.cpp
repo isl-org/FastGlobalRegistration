@@ -31,16 +31,15 @@
 
 int main(int argc, char * argv[])
 {
-    if (argc != 6) {
-        cout << "Usage : " << endl;
-        cout << "    Evaluation.exe <feature0> <feature1> <log_gth> <log_est> <output>" << endl;
-        return 0;
-    }
-    CApp app;    
-    app.ReadFeature(argv[1]);
-    app.ReadFeature(argv[2]);
-    //app.NormalizePoints();    
-    app.Evaluation(argv[3], argv[4], argv[5]);
-    return 0;
+	if (argc != 6) {
+		cout << "Usage : " << endl;
+		cout << "	Evaluation.exe <feature0> <feature1> <log_gth> <log_est> <output>" << endl;
+		return 0;
+	}
+	CApp app;	
+	app.ReadFeature(argv[1]);
+	app.ReadFeature(argv[2]);
+	app.Evaluation(argv[3], argv[4], argv[5]);
+	return 0;
 }
 
