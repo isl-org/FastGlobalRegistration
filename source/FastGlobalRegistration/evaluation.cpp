@@ -32,14 +32,13 @@
 int main(int argc, char * argv[])
 {
 	if (argc != 6) {
-		cout << "Usage : " << endl;
-		cout << "	Evaluation.exe <feature0> <feature1> <log_gth> <log_est> <output>" << endl;
+        printf("Usage ::\n");
+        printf("%s [feature_01] [feature_02] [transform_gth_log] [transform_est_txt] [eval_txt]\n", argv[0]);
 		return 0;
 	}
-	CApp app;	
+	CApp app;
 	app.ReadFeature(argv[1]);
 	app.ReadFeature(argv[2]);
 	app.Evaluation(argv[3], argv[4], argv[5]);
 	return 0;
 }
-

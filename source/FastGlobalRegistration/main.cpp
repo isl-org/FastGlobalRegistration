@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
 {
 	if (argc != 4)
 	{
-		printf("FastGlobalRegistration.exe [feature_01] [feature_02] [output_txt]\n");
+        printf("Usage ::\n");
+		printf("%s [feature_01] [feature_02] [transform_output_txt]\n", argv[0]);
 		return 0;
 	}
 	CApp app;
