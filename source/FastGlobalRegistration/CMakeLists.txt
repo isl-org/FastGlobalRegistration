@@ -1,3 +1,5 @@
 add_library(FastGlobalRegistrationLib STATIC app.cpp app.h)
 add_executable(FastGlobalRegistration main.cpp)
+add_executable(Evaluation evaluation.cpp)
 TARGET_LINK_LIBRARIES(FastGlobalRegistration FastGlobalRegistrationLib)
+TARGET_LINK_LIBRARIES(Evaluation FastGlobalRegistrationLib)

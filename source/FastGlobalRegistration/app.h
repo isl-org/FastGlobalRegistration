@@ -45,6 +45,8 @@ using namespace std;
 
 typedef vector<Vector3f> Points;
 typedef vector<VectorXf> Feature;
+typedef flann::Index<flann::L2<float>> KDTree;
+typedef std::vector<std::pair<int, int>> Correspondences;
 
 class CApp{
 public:
@@ -52,9 +54,11 @@ public:
 	void ReadFeature(const char* filepath);
 	void NormalizePoints();
 	void AdvancedMatching();
+    Eigen::Matrix4f ReadTrans(const char* filepath);
 	void WriteTrans(const char* filepath);
-    Matrix4f GetTrans();
+    Matrix4f GetOutputTrans();
 	double OptimizePairwise(bool decrease_mu_, int numIter_);
+    void Evaluation(const char* gth, const char* estimation, const char *output);
 
 private:
 	// containers
@@ -65,14 +69,20 @@ private:
 
 	// for normalization
 	Points Means;
-	float GlobalScale;
-	float StartScale;
+	float GlobalScale = 1.0f;
+	float StartScale = 1.0f;
 
 	// some internal functions
 	void ReadFeature(const char* filepath, Points& pts, Feature& feat);
-
-	void SearchFLANNTree(flann::Index<flann::L2<float>>* index,
-		VectorXf& input,
+    void TransformPoints(Points& points, const Eigen::Matrix4f& Trans);
+    void BuildDenseCorrespondence(const Eigen::Matrix4f& gth, 
+            Correspondences& corres);
+    
+    template <typename T>
+    void BuildKDTree(const vector<T>& data, KDTree* tree);
+    template <typename T>
+	void SearchKDTree(KDTree* tree,
+        const T& input,
 		std::vector<int>& indices,
 		std::vector<float>& dists,
 		int nn);

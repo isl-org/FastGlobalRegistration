@@ -65,14 +65,29 @@ void CApp::ReadFeature(const char* filepath, Points& pts, Feature& feat)
 		feat.push_back(feat_v);
 	}
 	fclose(fid);
-	printf("done.\n");
+	printf("%d points with %d feature dimensions.\n", nvertex, ndim);
 }
 
-void CApp::SearchFLANNTree(flann::Index<flann::L2<float>>* index,
-							VectorXf& input,
-							std::vector<int>& indices,
-							std::vector<float>& dists,
-							int nn)
+template <typename T>
+void CApp::BuildKDTree(const vector<T>& data, KDTree* tree)
+{
+    int rows, dim;
+    rows = (int)data.size();
+    dim = (int)data[0].size();
+    std::vector<float> dataset(rows * dim);
+    flann::Matrix<float> dataset_mat(&dataset[0], rows, dim);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < dim; j++)
+            dataset[i * dim + j] = data[i][j];
+    KDTree temp_tree(dataset_mat, flann::KDTreeSingleIndexParams(15));
+    temp_tree.buildIndex();
+    *tree = temp_tree;
+}
+
+template <typename T>
+void CApp::SearchKDTree(KDTree* tree, const T& input, 
+                            std::vector<int>& indices,
+							std::vector<float>& dists, int nn)
 {
 	int rows_t = 1;
 	int dim = input.size();
@@ -88,7 +103,7 @@ void CApp::SearchFLANNTree(flann::Index<flann::L2<float>>* index,
 	flann::Matrix<int> indices_mat(&indices[0], rows_t, nn);
 	flann::Matrix<float> dists_mat(&dists[0], rows_t, nn);
 
-	index->knnSearch(query_mat, indices_mat, dists_mat, nn, flann::SearchParams(128));
+	tree->knnSearch(query_mat, indices_mat, dists_mat, nn, flann::SearchParams(128));
 }
 
 void CApp::AdvancedMatching()
@@ -114,34 +129,11 @@ void CApp::AdvancedMatching()
 	/// BUILD FLANNTREE
 	///////////////////////////
 
-	// build FLANNTree - fi
-	int rows, dim;
-	rows = features_[fi].size();
-	dim = features_[fi][0].size();
+    KDTree feature_tree_i(flann::KDTreeSingleIndexParams(15));
+    BuildKDTree(features_[fi], &feature_tree_i);
 
-	std::vector<float> dataset_fi(rows * dim);
-	flann::Matrix<float> dataset_mat_fi(&dataset_fi[0], rows, dim);
-
-	for (int i = 0; i < rows; i++)
-		for (int j = 0; j < dim; j++)
-			dataset_fi[i * dim + j] = features_[fi][i][j];
-
-	flann::Index<flann::L2<float>> feature_tree_i(dataset_mat_fi, flann::KDTreeSingleIndexParams(15));
-	feature_tree_i.buildIndex();
-
-	// build FLANNTree - fj
-	rows = features_[fj].size();
-	dim = features_[fj][0].size();
-
-	std::vector<float> dataset_fj(rows * dim);
-	flann::Matrix<float> dataset_mat_fj(&dataset_fj[0], rows, dim);
-
-	for (int i = 0; i < rows; i++)
-		for (int j = 0; j < dim; j++)
-			dataset_fj[i * dim + j] = features_[fj][i][j];
-
-	flann::Index<flann::L2<float>> feature_tree_j(dataset_mat_fj, flann::KDTreeSingleIndexParams(15));
-	feature_tree_j.buildIndex();
+    KDTree feature_tree_j(flann::KDTreeSingleIndexParams(15));
+    BuildKDTree(features_[fj], &feature_tree_j);
 
 	bool crosscheck = true;
 	bool tuple = true;
@@ -162,11 +154,11 @@ void CApp::AdvancedMatching()
 	std::vector<int> i_to_j(nPti, -1);
 	for (int j = 0; j < nPtj; j++)
 	{
-		SearchFLANNTree(&feature_tree_i, features_[fj][j], corres_K, dis, 1);
+		SearchKDTree(&feature_tree_i, features_[fj][j], corres_K, dis, 1);
 		int i = corres_K[0];
 		if (i_to_j[i] == -1)
 		{
-			SearchFLANNTree(&feature_tree_j, features_[fi][i], corres_K, dis, 1);
+            SearchKDTree(&feature_tree_j, features_[fi][i], corres_K, dis, 1);
 			int ij = corres_K[0];
 			i_to_j[i] = ij;
 		}
@@ -497,11 +489,12 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 
 		trans = delta * trans;
 
-		// transform point clouds
-		Matrix3f R = delta.block<3, 3>(0, 0);
-		Vector3f t = delta.block<3, 1>(0, 3);
-		for (int cnt = 0; cnt < npcj; cnt++)
-			pcj_copy[cnt] = R * pcj_copy[cnt] + t;
+		//// transform point clouds
+		//Matrix3f R = delta.block<3, 3>(0, 0);
+		//Vector3f t = delta.block<3, 1>(0, 3);
+		//for (int cnt = 0; cnt < npcj; cnt++)
+		//	pcj_copy[cnt] = R * pcj_copy[cnt] + t;
+        TransformPoints(pcj_copy, delta);
 
 	}
 
@@ -509,7 +502,19 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 	return par;
 }
 
-Eigen::Matrix4f CApp::GetTrans()
+void CApp::TransformPoints(Points& points, const Eigen::Matrix4f& Trans)
+{
+    int npc = (int)points.size();
+    Matrix3f R = Trans.block<3, 3>(0, 0);
+    Vector3f t = Trans.block<3, 1>(0, 3);
+    Vector3f temp;
+    for (int cnt = 0; cnt < npc; cnt++) {
+        temp = R * points[cnt] + t;
+        points[cnt] = temp;
+    }
+}
+
+Eigen::Matrix4f CApp::GetOutputTrans()
 {
     Eigen::Matrix3f R;
 	Eigen::Vector3f t;
@@ -535,7 +540,7 @@ void CApp::WriteTrans(const char* filepath)
 	// '2' indicates that there are two point cloud fragments.
 	fprintf(fid, "0 1 2\n");
 
-    Eigen::Matrix4f transtemp = GetTrans();
+    Eigen::Matrix4f transtemp = GetOutputTrans();
 
 	fprintf(fid, "%.10f %.10f %.10f %.10f\n", transtemp(0, 0), transtemp(0, 1), transtemp(0, 2), transtemp(0, 3));
 	fprintf(fid, "%.10f %.10f %.10f %.10f\n", transtemp(1, 0), transtemp(1, 1), transtemp(1, 2), transtemp(1, 3));
@@ -543,4 +548,100 @@ void CApp::WriteTrans(const char* filepath)
 	fprintf(fid, "%.10f %.10f %.10f %.10f\n", 0.0f, 0.0f, 0.0f, 1.0f);
 
 	fclose(fid);
+}
+
+Eigen::Matrix4f CApp::ReadTrans(const char* filename)
+{
+    Eigen::Matrix4f temp;
+    temp.fill(0);
+    int temp0, temp1, temp2, cnt = 0;
+    FILE* fid = fopen(filename, "r");
+    while (fscanf(fid, "%d %d %d", &temp0, &temp1, &temp2) == 3)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            float a, b, c, d;
+            fscanf(fid, "%f %f %f %f", &a, &b, &c, &d);
+            temp(j, 0) = a;
+            temp(j, 1) = b;
+            temp(j, 2) = c;
+            temp(j, 3) = d;
+        }
+    }
+    return temp;
+}
+
+
+void CApp::BuildDenseCorrespondence(const Eigen::Matrix4f& trans, 
+        Correspondences& corres)
+{   
+    int fi = 0;
+    int fj = 1;
+    Points pci = pointcloud_[fi];
+    Points pcj = pointcloud_[fj];
+    TransformPoints(pcj, trans);
+
+    KDTree feature_tree_i(flann::KDTreeSingleIndexParams(15));
+    BuildKDTree(pci, &feature_tree_i);
+    std::vector<int> ind;
+    std::vector<float> dist;
+    corres.clear();
+    for (int j = 0; j < pcj.size(); ++j)
+    {
+        SearchKDTree(&feature_tree_i, pcj[j], ind, dist, 1);
+        float dist_j = sqrt(dist[0]);
+        if (dist_j / GlobalScale < MAX_CORR_DIST / 2.0)
+            corres.push_back(std::pair<int, int>(ind[0], j));
+    }
+}
+
+void CApp::Evaluation(const char* gth, const char* estimation, const char *output)
+{
+    float inlier_ratio = -1.0f;
+    float overlapping_ratio = -1.0f;
+
+    int fi = 0;
+    int fj = 1;
+
+    std::vector<std::pair<int, int>> corres;
+    Eigen::Matrix4f gth_trans = ReadTrans(gth);
+    BuildDenseCorrespondence(gth_trans, corres);
+    //visualize_matching(corres, m, nFrames);
+    printf("Groundtruth correspondences [%d-%d] : %d\n", fi, fj, 
+            (int)corres.size());
+
+    int ncorres = corres.size();
+    float err_mean = 0.0f;
+
+    Points pci = pointcloud_[fi];
+    Points pcj = pointcloud_[fj];
+    Eigen::Matrix4f est_trans = ReadTrans(estimation);
+    std::vector<float> error;
+    for (int i = 0; i < ncorres; ++i)
+    {
+        int idi = corres[i].first;
+        int idj = corres[i].second;
+        Eigen::Vector4f pi(pci[idi](0), pci[idi](1), pci[idi](2), 1);
+        Eigen::Vector4f pj(pcj[idj](0), pcj[idj](1), pcj[idj](2), 1);
+        Eigen::Vector4f pjt = est_trans*pj;
+        float errtemp = (pi - pjt).norm();
+        error.push_back(errtemp);
+        // this is based on the RMSE defined in
+        // https://en.wikipedia.org/wiki/Root-mean-square_deviation
+        errtemp = errtemp * errtemp;
+        err_mean += errtemp;
+    }
+    err_mean /= ncorres; // this is MSE = mean(d^2)
+    err_mean = sqrt(err_mean); // this is RMSE = sqrt(MSE)
+    printf("mean error : %0.4e\n", err_mean);
+
+    //overlapping_ratio = (float)ncorres / min(
+    //        pointcloud_[fj].size(), pointcloud_[fj].size());
+    overlapping_ratio = (float)ncorres / pointcloud_[fj].size();
+    
+    // write errors
+    FILE* fid = fopen(output, "w");
+    fprintf(fid, "%d %d %e %e %e\n", fi, fj, err_mean, 
+            inlier_ratio, overlapping_ratio);
+    fclose(fid);
 }
