@@ -26,24 +26,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
-#include <stdio.h>
+
 #include "app.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-	if (argc != 4)
-	{
+	if (argc != 6) {
         printf("Usage ::\n");
-		printf("%s [feature_01] [feature_02] [transform_output_txt]\n", argv[0]);
+        printf("%s [feature_01] [feature_02] [transform_gth_log] [transform_est_txt] [eval_txt]\n", argv[0]);
 		return 0;
 	}
 	CApp app;
 	app.ReadFeature(argv[1]);
 	app.ReadFeature(argv[2]);
-	app.NormalizePoints();
-	app.AdvancedMatching();
-	app.OptimizePairwise(true, ITERATION_NUMBER);
-	app.WriteTrans(argv[3]);
-
+	app.Evaluation(argv[3], argv[4], argv[5]);
 	return 0;
 }

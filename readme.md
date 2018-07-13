@@ -55,18 +55,20 @@ We have provided a synthetic dataset in the [dataset](dataset) folder. For examp
 > FastGlobalRegistration/FastGlobalRegistration \
 ../dataset/pairwise_noise_xyz_level_02_01_rot_05/features_0000.bin \
 ../dataset/pairwise_noise_xyz_level_02_01_rot_05/features_0001.bin \
-output.txt
+../dataset/pairwise_noise_xyz_level_02_01_rot_05/output.txt
 ```
 
 ### Evaluation
-To evaluate the output transformation, use [evaluate.py](source/Toolbox/evaluate.py) from the Toolbox folder.
+To evaluate the output transformation, use [evaluation program](source/FastGlobalRegistration/evaluation.cpp).
 ```
-> python evaluate.py \
-../../dataset/pairwise_noise_xyz_level_01_01_rot_05/output.txt \
-../../dataset/pairwise_noise_xyz_level_01_01_rot_05/gt.log \
-../../dataset/pairwise_noise_xyz_level_01_01_rot_05/gt.info
+> FastGlobalRegistration/Evaluation \
+../dataset/pairwise_noise_xyz_level_02_01_rot_05/features_0000.bin \
+../dataset/pairwise_noise_xyz_level_02_01_rot_05/features_0001.bin \
+../dataset/pairwise_noise_xyz_level_01_01_rot_05/gt.log \
+../dataset/pairwise_noise_xyz_level_01_01_rot_05/output.txt \
+../dataset/pairwise_noise_xyz_level_01_01_rot_05/output_eval.txt
 ```
-The evaluation method follows the protocol defined in [this page](http://redwood-data.org/indoor/registration.html).
+Evaluation program will write RMSE in output_eval.txt. The error in the Table 1 shows half of average RMSE.
 
 ### Creating input
 
@@ -119,6 +121,10 @@ We measure distance relative to the diameter_of_model if **USE_ABSOLUTE_SCALE** 
 ### Matlab binding
 
 FastGlobalRegistration has a Matlab binding courtesy of Jordi Pont-Tuset. It can be used seamlessly with the compilation tool chains mentioned above. Follow instructions provided by CMake if you need to make additional configuration for MATLAB_ROOT environment variable. To use the Matlab binding, execute [fgr_demo.m](source/Matlab/fgr_demo.m) from source/Matlab.
+
+### Using Open3D
+
+This repository is maintained for providing standard alone FastGlobalRegistration application reproducing the results in the published paper. Open3D has end-to-end implementation used for FastGlobalRegistration - including point cloud I/O, feature extraction, and FastGlobalRegistration module in one place. For more details, please follow [this tutorial](http://open3d.org/docs/tutorial/Advanced/fast_global_registration.html).
 
 ### Troubleshooting
 If you encounter issues with FGR, please check [troubleshooting.md](troubleshooting.md)
