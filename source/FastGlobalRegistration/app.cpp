@@ -180,7 +180,7 @@ void CApp::AdvancedMatching()
 	for (int j = 0; j < ncorres_ji; ++j)
 		corres.push_back(std::pair<int, int>(corres_ji[j].first, corres_ji[j].second));
 
-	printf("points are remained : %d\n", (int)corres.size());
+	printf("Number of points that remain: %d\n", (int)corres.size());
 
 	///////////////////////////
 	/// CROSS CHECK
@@ -227,7 +227,7 @@ void CApp::AdvancedMatching()
 				}
 			}
 		}
-		printf("points are remained : %d\n", (int)corres.size());
+		printf("Number of points that remain after cross-check: %d\n", (int)corres.size());
 	}
 
 	///////////////////////////
