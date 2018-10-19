@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
         printf("%s [feature_01] [feature_02] [transform_gth_log] [transform_est_txt] [eval_txt]\n", argv[0]);
 		return 0;
 	}
-        fgr::CApp app;
+	fgr::CApp app;
 	app.ReadFeature(argv[1]);
 	app.ReadFeature(argv[2]);
 	app.Evaluation(argv[3], argv[4], argv[5]);
