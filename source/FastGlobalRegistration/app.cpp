@@ -112,7 +112,6 @@ void CApp::SearchKDTree(KDTree* tree, const T& input,
 
 void CApp::AdvancedMatching()
 {
-  printf("Values are: div_factor = %g, use_absolute_scale = %g, max_corr_dist = %g, iteration_number = %g, tuple_scale = %g, tuple_max_cnt = %g\n", double(div_factor_), double(use_absolute_scale_), double(max_corr_dist_), double(iteration_number_), double(tuple_scale_), double(tuple_max_cnt_));
 	int fi = 0;
 	int fj = 1;
 
