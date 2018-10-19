@@ -5,6 +5,12 @@ project(FastGlobalRegistration)
 set(FastGlobalRegistration_VERSION_MAJOR "1")
 set(FastGlobalRegistration_VERSION_MINOR "0")
 
+# Build either a STATIC or SHARED library
+if (NOT FastGlobalRegistration_LINK_MODE)
+  set(FastGlobalRegistration_LINK_MODE "STATIC")
+endif(NOT FastGlobalRegistration_LINK_MODE)
+message(STATUS "Libary linkage will be " ${FastGlobalRegistration_LINK_MODE})
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # set include directories
