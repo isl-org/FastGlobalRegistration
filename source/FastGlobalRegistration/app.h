@@ -50,6 +50,18 @@ typedef std::vector<std::pair<int, int>> Correspondences;
 
 class CApp{
 public:
+	CApp(double div_factor         = DIV_FACTOR,
+	    bool    use_absolute_scale = USE_ABSOLUTE_SCALE,
+	    double  max_corr_dist      = MAX_CORR_DIST,
+	    int     iteration_number   = ITERATION_NUMBER,
+	    float   tuple_scale        = TUPLE_SCALE,
+	    int     tuple_max_cnt      = TUPLE_MAX_CNT):
+		div_factor_(div_factor),
+		use_absolute_scale_(use_absolute_scale),
+		max_corr_dist_(max_corr_dist),
+		iteration_number_(iteration_number),
+		tuple_scale_(tuple_scale),
+		tuple_max_cnt_(tuple_max_cnt){}
 	void LoadFeature(const Points& pts, const Feature& feat);
 	void ReadFeature(const char* filepath);
 	void NormalizePoints();
@@ -57,7 +69,7 @@ public:
 	Eigen::Matrix4f ReadTrans(const char* filepath);
 	void WriteTrans(const char* filepath);
 	Matrix4f GetOutputTrans();
-	double OptimizePairwise(bool decrease_mu_, int numIter_);
+	double OptimizePairwise(bool decrease_mu_);
 	void Evaluation(const char* gth, const char* estimation, const char *output);
 
 private:
@@ -86,4 +98,11 @@ private:
 		std::vector<int>& indices,
 		std::vector<float>& dists,
 		int nn);
+
+	double div_factor_;
+	bool   use_absolute_scale_;
+	double max_corr_dist_;
+	int    iteration_number_;
+	float  tuple_scale_;
+	int    tuple_max_cnt_;
 };

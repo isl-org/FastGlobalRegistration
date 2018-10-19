@@ -108,6 +108,7 @@ void CApp::SearchKDTree(KDTree* tree, const T& input,
 
 void CApp::AdvancedMatching()
 {
+  printf("Values are: div_factor = %g, use_absolute_scale = %g, max_corr_dist = %g, iteration_number = %g, tuple_scale = %g, tuple_max_cnt = %g\n", double(div_factor_), double(use_absolute_scale_), double(max_corr_dist_), double(iteration_number_), double(tuple_scale_), double(tuple_max_cnt_));
 	int fi = 0;
 	int fj = 1;
 
@@ -243,7 +244,7 @@ void CApp::AdvancedMatching()
 		int rand0, rand1, rand2;
 		int idi0, idi1, idi2;
 		int idj0, idj1, idj2;
-		float scale = TUPLE_SCALE;
+		float scale = tuple_scale_;
 		int ncorr = corres.size();
 		int number_of_trial = ncorr * 100;
 		std::vector<std::pair<int, int>> corres_tuple;
@@ -291,7 +292,7 @@ void CApp::AdvancedMatching()
 				cnt++;
 			}
 
-			if (cnt >= TUPLE_MAX_CNT)
+			if (cnt >= tuple_max_cnt_)
 				break;
 		}
 
@@ -364,7 +365,7 @@ void CApp::NormalizePoints()
 	}
 
 	//// mean of the scale variation
-	if (USE_ABSOLUTE_SCALE) {
+	if (use_absolute_scale_) {
 		GlobalScale = 1.0f;
 		StartScale = scale;
 	} else {
@@ -385,12 +386,12 @@ void CApp::NormalizePoints()
 	}
 }
 
-double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
+double CApp::OptimizePairwise(bool decrease_mu_)
 {
 	printf("Pairwise rigid pose optimization\n");
 
 	double par;
-	int numIter = numIter_;
+	int numIter = iteration_number_;
 	TransOutput_ = Eigen::Matrix4f::Identity();
 
 	par = StartScale;
@@ -418,8 +419,8 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 		// graduated non-convexity.
 		if (decrease_mu_)
 		{
-			if (itr % 4 == 0 && par > MAX_CORR_DIST) {
-				par /= DIV_FACTOR;
+			if (itr % 4 == 0 && par > max_corr_dist_) {
+				par /= div_factor_;
 			}
 		}
 
@@ -583,7 +584,7 @@ void CApp::BuildDenseCorrespondence(const Eigen::Matrix4f& trans,
 	{
 		SearchKDTree(&feature_tree_i, pcj[j], ind, dist, 1);
 		float dist_j = sqrt(dist[0]);
-		if (dist_j / GlobalScale < MAX_CORR_DIST / 2.0)
+		if (dist_j / GlobalScale < max_corr_dist_ / 2.0)
 			corres.push_back(std::pair<int, int>(ind[0], j));
 	}
 }
