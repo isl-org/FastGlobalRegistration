@@ -29,6 +29,10 @@
 
 #include "app.h"
 
+using namespace Eigen;
+using namespace std;
+using namespace fgr;
+
 void CApp::ReadFeature(const char* filepath)
 {
 	Points pts;
@@ -143,10 +147,10 @@ void CApp::AdvancedMatching()
 	std::vector<float> dis;
 	std::vector<int> ind;
 
-	std::vector<std::pair<int, int>> corres;
-	std::vector<std::pair<int, int>> corres_cross;
-	std::vector<std::pair<int, int>> corres_ij;
-	std::vector<std::pair<int, int>> corres_ji;
+	std::vector<std::pair<int, int> > corres;
+	std::vector<std::pair<int, int> > corres_cross;
+	std::vector<std::pair<int, int> > corres_ij;
+	std::vector<std::pair<int, int> > corres_ji;
 
 	///////////////////////////
 	/// INITIAL MATCHING
@@ -195,8 +199,8 @@ void CApp::AdvancedMatching()
 		// build data structure for cross check
 		corres.clear();
 		corres_cross.clear();
-		std::vector<std::vector<int>> Mi(nPti);
-		std::vector<std::vector<int>> Mj(nPtj);
+		std::vector<std::vector<int> > Mi(nPti);
+		std::vector<std::vector<int> > Mj(nPtj);
 
 		int ci, cj;
 		for (int i = 0; i < ncorres_ij; ++i)
@@ -247,7 +251,7 @@ void CApp::AdvancedMatching()
 		float scale = tuple_scale_;
 		int ncorr = corres.size();
 		int number_of_trial = ncorr * 100;
-		std::vector<std::pair<int, int>> corres_tuple;
+		std::vector<std::pair<int, int> > corres_tuple;
 
 		int cnt = 0;
 		int i;
@@ -305,7 +309,7 @@ void CApp::AdvancedMatching()
 
 	if (swapped)
 	{
-		std::vector<std::pair<int, int>> temp;
+		std::vector<std::pair<int, int> > temp;
 		for (int i = 0; i < corres.size(); i++)
 			temp.push_back(std::pair<int, int>(corres[i].second, corres[i].first));
 		corres.clear();
@@ -597,7 +601,7 @@ void CApp::Evaluation(const char* gth, const char* estimation, const char *outpu
 	int fi = 0;
 	int fj = 1;
 
-	std::vector<std::pair<int, int>> corres;
+	std::vector<std::pair<int, int> > corres;
 	Eigen::Matrix4f gth_trans = ReadTrans(gth);
 	BuildDenseCorrespondence(gth_trans, corres);
 	printf("Groundtruth correspondences [%d-%d] : %d\n", fi, fj, 

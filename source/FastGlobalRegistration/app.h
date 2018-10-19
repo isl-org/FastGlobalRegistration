@@ -39,14 +39,12 @@
 #define TUPLE_SCALE			0.95	// Similarity measure used for tuples of feature points.
 #define TUPLE_MAX_CNT		1000	// Maximum tuple numbers.
 
-
-using namespace Eigen;
-using namespace std;
-
-typedef vector<Vector3f> Points;
-typedef vector<VectorXf> Feature;
-typedef flann::Index<flann::L2<float>> KDTree;
-typedef std::vector<std::pair<int, int>> Correspondences;
+namespace fgr {
+  
+typedef std::vector<Eigen::Vector3f> Points;
+typedef std::vector<Eigen::VectorXf> Feature;
+typedef flann::Index<flann::L2<float> > KDTree;
+typedef std::vector<std::pair<int, int> > Correspondences;
 
 class CApp{
 public:
@@ -68,16 +66,16 @@ public:
 	void AdvancedMatching();
 	Eigen::Matrix4f ReadTrans(const char* filepath);
 	void WriteTrans(const char* filepath);
-	Matrix4f GetOutputTrans();
+	Eigen::Matrix4f GetOutputTrans();
 	double OptimizePairwise(bool decrease_mu_);
 	void Evaluation(const char* gth, const char* estimation, const char *output);
 
 private:
 	// containers
-	vector<Points> pointcloud_;
-	vector<Feature> features_;
-	Matrix4f TransOutput_;
-	vector<pair<int, int>> corres_;
+	std::vector<Points> pointcloud_;
+	std::vector<Feature> features_;
+	Eigen::Matrix4f TransOutput_;
+	std::vector<std::pair<int, int> > corres_;
 
 	// for normalization
 	Points Means;
@@ -91,7 +89,7 @@ private:
 			Correspondences& corres);
 	
 	template <typename T>
-	void BuildKDTree(const vector<T>& data, KDTree* tree);
+	void BuildKDTree(const std::vector<T>& data, KDTree* tree);
 	template <typename T>
 	void SearchKDTree(KDTree* tree,
 		const T& input,
@@ -106,3 +104,5 @@ private:
 	float  tuple_scale_;
 	int    tuple_max_cnt_;
 };
+
+}
