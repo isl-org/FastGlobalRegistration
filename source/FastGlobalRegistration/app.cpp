@@ -29,6 +29,10 @@
 
 #include "app.h"
 
+using namespace Eigen;
+using namespace std;
+using namespace fgr;
+
 void CApp::ReadFeature(const char* filepath)
 {
 	Points pts;
@@ -142,10 +146,10 @@ void CApp::AdvancedMatching()
 	std::vector<float> dis;
 	std::vector<int> ind;
 
-	std::vector<std::pair<int, int>> corres;
-	std::vector<std::pair<int, int>> corres_cross;
-	std::vector<std::pair<int, int>> corres_ij;
-	std::vector<std::pair<int, int>> corres_ji;
+	std::vector<std::pair<int, int> > corres;
+	std::vector<std::pair<int, int> > corres_cross;
+	std::vector<std::pair<int, int> > corres_ij;
+	std::vector<std::pair<int, int> > corres_ji;
 
 	///////////////////////////
 	/// INITIAL MATCHING
@@ -194,8 +198,8 @@ void CApp::AdvancedMatching()
 		// build data structure for cross check
 		corres.clear();
 		corres_cross.clear();
-		std::vector<std::vector<int>> Mi(nPti);
-		std::vector<std::vector<int>> Mj(nPtj);
+		std::vector<std::vector<int> > Mi(nPti);
+		std::vector<std::vector<int> > Mj(nPtj);
 
 		int ci, cj;
 		for (int i = 0; i < ncorres_ij; ++i)
@@ -243,10 +247,10 @@ void CApp::AdvancedMatching()
 		int rand0, rand1, rand2;
 		int idi0, idi1, idi2;
 		int idj0, idj1, idj2;
-		float scale = TUPLE_SCALE;
+		float scale = tuple_scale_;
 		int ncorr = corres.size();
 		int number_of_trial = ncorr * 100;
-		std::vector<std::pair<int, int>> corres_tuple;
+		std::vector<std::pair<int, int> > corres_tuple;
 
 		int cnt = 0;
 		int i;
@@ -291,7 +295,7 @@ void CApp::AdvancedMatching()
 				cnt++;
 			}
 
-			if (cnt >= TUPLE_MAX_CNT)
+			if (cnt >= tuple_max_cnt_)
 				break;
 		}
 
@@ -304,7 +308,7 @@ void CApp::AdvancedMatching()
 
 	if (swapped)
 	{
-		std::vector<std::pair<int, int>> temp;
+		std::vector<std::pair<int, int> > temp;
 		for (int i = 0; i < corres.size(); i++)
 			temp.push_back(std::pair<int, int>(corres[i].second, corres[i].first));
 		corres.clear();
@@ -364,7 +368,7 @@ void CApp::NormalizePoints()
 	}
 
 	//// mean of the scale variation
-	if (USE_ABSOLUTE_SCALE) {
+	if (use_absolute_scale_) {
 		GlobalScale = 1.0f;
 		StartScale = scale;
 	} else {
@@ -385,12 +389,12 @@ void CApp::NormalizePoints()
 	}
 }
 
-double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
+double CApp::OptimizePairwise(bool decrease_mu_)
 {
 	printf("Pairwise rigid pose optimization\n");
 
 	double par;
-	int numIter = numIter_;
+	int numIter = iteration_number_;
 	TransOutput_ = Eigen::Matrix4f::Identity();
 
 	par = StartScale;
@@ -418,8 +422,8 @@ double CApp::OptimizePairwise(bool decrease_mu_, int numIter_)
 		// graduated non-convexity.
 		if (decrease_mu_)
 		{
-			if (itr % 4 == 0 && par > MAX_CORR_DIST) {
-				par /= DIV_FACTOR;
+			if (itr % 4 == 0 && par > max_corr_dist_) {
+				par /= div_factor_;
 			}
 		}
 
@@ -583,7 +587,7 @@ void CApp::BuildDenseCorrespondence(const Eigen::Matrix4f& trans,
 	{
 		SearchKDTree(&feature_tree_i, pcj[j], ind, dist, 1);
 		float dist_j = sqrt(dist[0]);
-		if (dist_j / GlobalScale < MAX_CORR_DIST / 2.0)
+		if (dist_j / GlobalScale < max_corr_dist_ / 2.0)
 			corres.push_back(std::pair<int, int>(ind[0], j));
 	}
 }
@@ -596,7 +600,7 @@ void CApp::Evaluation(const char* gth, const char* estimation, const char *outpu
 	int fi = 0;
 	int fj = 1;
 
-	std::vector<std::pair<int, int>> corres;
+	std::vector<std::pair<int, int> > corres;
 	Eigen::Matrix4f gth_trans = ReadTrans(gth);
 	BuildDenseCorrespondence(gth_trans, corres);
 	printf("Groundtruth correspondences [%d-%d] : %d\n", fi, fj, 

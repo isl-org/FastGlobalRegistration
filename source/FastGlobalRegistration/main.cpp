@@ -37,12 +37,12 @@ int main(int argc, char *argv[])
 		printf("%s [feature_01] [feature_02] [transform_output_txt]\n", argv[0]);
 		return 0;
 	}
-	CApp app;
+	fgr::CApp app;
 	app.ReadFeature(argv[1]);
 	app.ReadFeature(argv[2]);
 	app.NormalizePoints();
 	app.AdvancedMatching();
-	app.OptimizePairwise(true, ITERATION_NUMBER);
+	app.OptimizePairwise(true);
 	app.WriteTrans(argv[3]);
 
 	return 0;

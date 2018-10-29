@@ -1,4 +1,4 @@
-add_library(FastGlobalRegistrationLib STATIC app.cpp app.h)
+add_library(FastGlobalRegistrationLib ${FastGlobalRegistration_LINK_MODE} app.cpp app.h)
 add_executable(FastGlobalRegistration main.cpp)
 add_executable(Evaluation evaluation.cpp)
 TARGET_LINK_LIBRARIES(FastGlobalRegistration FastGlobalRegistrationLib)
